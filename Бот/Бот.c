@@ -18,7 +18,8 @@ int main() {
 	LPSTR  buffer = (CHAR*)calloc(size_buffer, sizeof(CHAR));
 	BOOL Connection;
 	BOOL SuccesRead;
-	DWORD d = 0, zap = 0, ch = 0;
+	DWORD bukva=0;
+	DWORD zap = 0, ch = 0; // ЧИСЛА ОТ КЛИЕНТА
 	while (TRUE) {
 
 		hNamedPipe = CreateNamedPipeA(
@@ -33,26 +34,36 @@ int main() {
 		
 		Connection = ConnectNamedPipe(hNamedPipe, NULL);
 		if (Connection = TRUE) {
-		/*	printf("Соединение с клиентом установлено успешно!");
+			printf("Соединение с клиентом установлено успешно!");
 			Sleep(1000);
-			system("cls");*/
+			system("cls");
 			SuccesRead = ReadFile(hNamedPipe, buffer, size_buffer,  &actual_read_bite, NULL);
-			zap = 0; ch = 0;
+			zap = 0; ch = 0, bukva = 0;
 			if (SuccesRead == TRUE) {
 
-
+				
 				printf("\n Клиент ввел - " );
 				printf(buffer);
 				for (int i = 0; i < strlen(buffer); i++)
 				{
-					if (buffer[i] == '.') zap++;
+					if (buffer[i] == '.') zap++; // количество точек
 					if (buffer[i] == '-' || buffer[i] == '1' || buffer[i] == '2' || buffer[i] == '3' || buffer[i] == '4' || buffer[i] == '5' || buffer[i] == '6' || buffer[i] == '7' || buffer[i] == '8' || buffer[i] == '9' || buffer[i] == '0')
 					{
 						ch++;
 					
 					}
+					if (buffer[i] >= 'A' && buffer[i] <= 'Z' || buffer[i] >= 'a' && buffer[i] <= 'z' ||
+						buffer[i] >= 'А' && buffer[i] <= 'Я' || buffer[i] >= 'а' && buffer[i] <= 'я' ||
+						buffer[i] == 'Ё' || buffer[i] == 'ё') {
+						
+						bukva++;
+					}
+				}
+				if (bukva > 0) {
+					sprintf(buffer, "Вы ввели букву!");
 				}
 				if (ch + zap == strlen(buffer) && zap < 2) {
+					// если 1.4 = 2 + 1(точка) = 3
 
 					otvet = atof(buffer);
 					otvet = pow(otvet, 2);
@@ -60,6 +71,7 @@ int main() {
 					sprintf(buffer, "%3.5f", otvet);
 
 				}
+				
 				else {
 					sprintf(buffer, "%s", "Невозможно возвести в степень\n");
 
